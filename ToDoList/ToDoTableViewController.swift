@@ -12,6 +12,8 @@ class ToDoTableViewController: UITableViewController {
     
     var items = [ToDo]()
 
+    
+    //Normal functions
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -20,14 +22,43 @@ class ToDoTableViewController: UITableViewController {
         } else {
             items = ToDo.loadSamples()!
         }
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
         self.navigationItem.leftBarButtonItem = self.editButtonItem
+    }
+    
+    //Prepare function
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("PREPARE PRESSED.")
+        if segue.identifier == "EditTodo",
+            let navController = segue.destination as? UINavigationController,
+            let todoDetailController = navController.topViewController as? ToDoDetailTableViewController {
+            print("PREPARE PASSED")
+            let indexPath = tableView.indexPathForSelectedRow!
+            let selectedToDo = items[indexPath.row]
+            todoDetailController.toDo = selectedToDo
+        }
+    }
+    
+    //Unwind Functions
+    @IBAction func unwindToToDo(segue: UIStoryboardSegue) {
+        guard segue.identifier == "SaveToDo" else {return}
+        let sourceViewController = segue.source as! ToDoDetailTableViewController
+        
+        
+        if let todo = sourceViewController.toDo {
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                items[selectedIndexPath.row] = todo
+                tableView.reloadRows(at: [selectedIndexPath], with: .bottom)
+            } else {
+                let newIndexPath = IndexPath(row: items.count, section: 0)
+                items.append(todo)
+                tableView.insertRows(at: [newIndexPath], with: .bottom)
+            }
+        }
+        
     }
 
     // MARK: - Table view data source
+    //Table View Functions
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -66,31 +97,5 @@ class ToDoTableViewController: UITableViewController {
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
-    
-    
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

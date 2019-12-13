@@ -13,6 +13,12 @@ struct ToDo {
     var isComplete: Bool
     var dueDate: Date
     var note: String?
+    static let dueDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
     
     static func loadTodos() -> [ToDo]? {
         return nil
@@ -24,6 +30,7 @@ struct ToDo {
         let toDoThree = ToDo(title: "Write", isComplete: false, dueDate: Date(), note: "Diary.")
         
         return [toDoOne, toDoTwo, toDoThree]
+        
         
     }
 }
